@@ -1,4 +1,4 @@
-import { PEOPLE, CARS, firebaseConfig } from "./config.js";
+const { PEOPLE, CARS, firebaseConfig } = await import(`./config.js?v=${window.APP_VERSION}`);
 
 const NAMES = PEOPLE.map((p) => p.name);
 const isAdmin = (name) => !!PEOPLE.find((p) => p.name === name)?.admin;
@@ -7,7 +7,7 @@ const OTHER = "רכב אחר";
 const OTHER_COLOR = "#a3a3a3";
 // ניסוח לפי מגדר: g(name, "חנה", "חנתה")
 const g = (name, m, f) => (PEOPLE.find((p) => p.name === name)?.female ? f : m);
-// "האקספנג" אבל "רכב של השכן" (בלי ה' כפולה לשם חופשי)
+// "האקספנג" אבל "רכב של דני" (בלי ה' כפולה לשם חופשי)
 const the = (car) => (CAR_NAMES.includes(car) ? `ה${car}` : car || "הרכב");
 
 const $ = (id) => document.getElementById(id);

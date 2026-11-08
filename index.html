@@ -27,7 +27,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <title>חניה דגניה 6</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- גרסה: להעלות את המספר בכל עדכון כדי שהדפדפן יטען קבצים חדשים -->
+  <script>window.APP_VERSION = "2";</script>
+  <script>document.write('<link rel="stylesheet" href="style.css?v=' + APP_VERSION + '" />');</script>
 </head>
 <body data-status="loading">
   <div class="glow" aria-hidden="true"></div>
@@ -109,6 +111,6 @@
     </form>
   </dialog>
 
-  <script type="module" src="app.js"></script>
+  <script type="module">import(`./app.js?v=${window.APP_VERSION}`);</script>
 </body>
 </html>

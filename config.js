@@ -7,6 +7,9 @@ export const PEOPLE = [
   { name: "אמא", female: true },
 ];
 
+// הרכבים (אפשר לשנות/להוסיף)
+export const CARS = ["אקספנג", "לקסוס"];
+
 // הגדרות Firebase — מעתיקים מ-Firebase Console:
 // Project settings → General → Your apps → Web app → SDK setup and configuration
 // (המפתחות האלה לא סודיים; ההגנה היא דרך "קוד משפחה" וחוקי ה-Database, ראה README)

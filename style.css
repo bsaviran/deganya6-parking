@@ -51,7 +51,7 @@ h2 { margin-top: 0; font-size: 1.1rem; }
 .status.parked { border-color: var(--parked); }
 .status.blocked { border-color: var(--blocked); }
 .emoji { font-size: 3.2rem; line-height: 1.2; }
-.big { font-size: 1.5rem; font-weight: 700; margin-top: 6px; }
+.big { font-size: 1.5rem; font-weight: 700; margin-top: 6px; white-space: pre-line; }
 .sub { color: var(--muted); margin-top: 6px; font-size: .95rem; white-space: pre-line; }
 
 .actions { display: grid; gap: 10px; margin-bottom: 14px; }

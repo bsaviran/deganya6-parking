@@ -1,4 +1,4 @@
-import { PEOPLE, firebaseConfig } from "./config.js";
+import { PEOPLE, CARS, firebaseConfig } from "./config.js";
 
 const NAMES = PEOPLE.map((p) => p.name);
 // ניסוח לפי מגדר: g(name, "חנה", "חנתה")
@@ -112,18 +112,23 @@ function render({ state: s, history }) {
   card.className = "card status";
   let emoji, text, sub = "";
 
-  if (!state.parkedBy) {
+  const s_ = state;
+  const parkedLabel = s_.parkedCar || s_.parkedBy;
+  const blockedLabel = s_.blockedCar || s_.blockedBy;
+  const parkedLine = `🚗 ${parkedLabel} — ${s_.parkedBy} ${g(s_.parkedBy, "חנה", "חנתה")} ${fmtTime(s_.parkedAt)}`;
+
+  if (!s_.parkedBy) {
     card.classList.add("free");
     emoji = "✅"; text = "החניון פנוי";
-  } else if (state.blockedBy) {
+  } else if (s_.blockedBy) {
     card.classList.add("blocked");
     emoji = "⛔";
-    text = `${state.parkedBy} בחניון · ${state.blockedBy} ${g(state.blockedBy, "חוסם", "חוסמת")}`;
-    sub = `${g(state.parkedBy, "חנה", "חנתה")} ${fmtTime(state.parkedAt)}\n${g(state.blockedBy, "חוסם", "חוסמת")} מ-${fmtTime(state.blockedAt)}`;
+    text = `${parkedLabel} בחניון\n${blockedLabel} מאחור`;
+    sub = `${parkedLine}\n⛔ ${blockedLabel} — ${s_.blockedBy} ${g(s_.blockedBy, "חוסם", "חוסמת")} מ-${fmtTime(s_.blockedAt)}`;
   } else {
     card.classList.add("parked");
-    emoji = "🚗"; text = `${state.parkedBy} בחניון`;
-    sub = `מאז ${fmtTime(state.parkedAt)}`;
+    emoji = "🚗"; text = `${parkedLabel} בחניון`;
+    sub = parkedLine;
   }
   if (state.note) sub += (sub ? "\n" : "") + `📝 ${state.note}`;
 
@@ -168,31 +173,32 @@ function act(patch, text) {
 function renderActions() {
   $("actions").innerHTML = "";
   const now = () => Date.now();
-  const { parkedBy, blockedBy } = state;
+  const { parkedBy, parkedCar, blockedBy, blockedCar } = state;
+  const CLEAR = { parkedBy: null, parkedCar: null, parkedAt: null, blockedBy: null, blockedCar: null, blockedAt: null };
+  const CLEAR_BLOCK = { blockedBy: null, blockedCar: null, blockedAt: null };
 
   if (!parkedBy) {
-    addBtn("🚗 חניתי בחניון", "parked", () =>
-      act({ parkedBy: me, parkedAt: now(), blockedBy: null, blockedAt: null }, `${me} ${g(me, "חנה", "חנתה")} בחניון`));
+    CARS.forEach((car) =>
+      addBtn(`🚗 חניתי בחניון עם ה${car}`, "parked", () =>
+        act({ ...CLEAR, parkedBy: me, parkedCar: car, parkedAt: now() },
+          `${me} ${g(me, "חנה", "חנתה")} בחניון עם ה${car}`)));
+  } else if (!blockedBy) {
+    CARS.filter((c) => c !== parkedCar).forEach((car) =>
+      addBtn(`⛔ חסמתי עם ה${car}`, "blocked", () =>
+        act({ blockedBy: me, blockedCar: car, blockedAt: now() },
+          `${me} ${g(me, "חסם", "חסמה")} עם ה${car}`)));
+    addBtn(`✅ יצאתי עם ה${parkedCar || "רכב"} — החניון פנוי`, "free", () =>
+      act(CLEAR, `${me} ${g(me, "יצא", "יצאה")} מהחניון עם ה${parkedCar || "רכב"}`));
   } else {
-    if (parkedBy === me) {
-      addBtn("✅ יצאתי — החניון פנוי", "free", () =>
-        act({ parkedBy: null, parkedAt: null, blockedBy: null, blockedAt: null }, `${me} ${g(me, "יצא", "יצאה")} מהחניון`));
-    }
-    if (!blockedBy && parkedBy !== me) {
-      addBtn(`⛔ חסמתי את ${parkedBy}`, "blocked", () =>
-        act({ blockedBy: me, blockedAt: now() }, `${me} ${g(me, "חוסם", "חוסמת")} את ${parkedBy}`));
-    }
-    if (blockedBy === me) {
-      addBtn("↩️ הזזתי — שחררתי חסימה", "free", () =>
-        act({ blockedBy: null, blockedAt: null }, `${me} ${g(me, "שחרר", "שחררה")} את החסימה`));
-    }
+    addBtn(`↩️ הזזתי את ה${blockedCar || "רכב"} — אין חסימה`, "free", () =>
+      act(CLEAR_BLOCK, `${me} ${g(me, "הזיז", "הזיזה")} את ה${blockedCar || "רכב"}`));
   }
 
   // תיקון ידני אם המצב לא נכון
   if (parkedBy) {
     addBtn("🧹 איפוס — החניון פנוי", "ghost", () => {
       if (!confirm("לאפס את המצב לחניון פנוי?")) return Promise.resolve();
-      return act({ parkedBy: null, parkedAt: null, blockedBy: null, blockedAt: null }, `${me} ${g(me, "איפס", "איפסה")} את המצב`);
+      return act(CLEAR, `${me} ${g(me, "איפס", "איפסה")} את המצב`);
     });
   }
 }

@@ -5,7 +5,6 @@ export const PEOPLE = [
   { name: "אמא", female: true },
   { name: "אבירן" },
   { name: "יורם מיכאל" },
-  { name: "אחר" },
 ];
 
 // הרכבים (אפשר לשנות/להוסיף)

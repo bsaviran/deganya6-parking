@@ -100,3 +100,8 @@ input {
 .history time { color: var(--muted); font-size: .8rem; display: block; }
 
 .error { color: var(--blocked); text-align: center; }
+
+/* כפתורי "רכב אחר" — מסגרת צבעונית במקום רקע מלא */
+button.ghost-color { background: transparent; border: 2px solid; }
+button.parked.ghost-color { color: var(--parked); border-color: var(--parked); }
+button.blocked.ghost-color { color: var(--blocked); border-color: var(--blocked); }

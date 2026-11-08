@@ -1,6 +1,7 @@
 import { PEOPLE, CARS, firebaseConfig } from "./config.js";
 
 const NAMES = PEOPLE.map((p) => p.name);
+const OTHER = "רכב אחר";
 // ניסוח לפי מגדר: g(name, "חנה", "חנתה")
 const g = (name, m, f) => (PEOPLE.find((p) => p.name === name)?.female ? f : m);
 
@@ -177,21 +178,32 @@ function renderActions() {
   const CLEAR = { parkedBy: null, parkedCar: null, parkedAt: null, blockedBy: null, blockedCar: null, blockedAt: null };
   const CLEAR_BLOCK = { blockedBy: null, blockedCar: null, blockedAt: null };
 
+  // "האקספנג" אבל "רכב של השכן" (בלי ה' כפולה לשם חופשי)
+  const the = (car) => (CARS.includes(car) ? `ה${car}` : car || "הרכב");
+  // כפתור "רכב אחר": שואל איזה רכב (לא חובה) ואז מבצע
+  const other = (label, cls, run) =>
+    addBtn(label, cls, () => {
+      const name = prompt("איזה רכב? (למשל: הרכב של השכן) — אפשר להשאיר ריק");
+      if (name === null) return Promise.resolve(); // ביטול
+      return run(name.trim().slice(0, 30) || OTHER);
+    });
+
   if (!parkedBy) {
-    CARS.forEach((car) =>
-      addBtn(`🚗 חניתי בחניון עם ה${car}`, "parked", () =>
-        act({ ...CLEAR, parkedBy: me, parkedCar: car, parkedAt: now() },
-          `${me} ${g(me, "חנה", "חנתה")} בחניון עם ה${car}`)));
+    const park = (car) => act({ ...CLEAR, parkedBy: me, parkedCar: car, parkedAt: now() },
+      `${me} ${g(me, "סימן", "סימנה")}: ${the(car)} בחניון`);
+    CARS.forEach((car) => addBtn(`🚗 ${the(car)} בחניון`, "parked", () => park(car)));
+    other(`🚙 ${OTHER} בחניון`, "parked ghost-color", park);
   } else if (!blockedBy) {
+    const block = (car) => act({ blockedBy: me, blockedCar: car, blockedAt: now() },
+      `${me} ${g(me, "סימן", "סימנה")}: ${the(car)} חוסם את ${the(parkedCar)}`);
     CARS.filter((c) => c !== parkedCar).forEach((car) =>
-      addBtn(`⛔ חסמתי עם ה${car}`, "blocked", () =>
-        act({ blockedBy: me, blockedCar: car, blockedAt: now() },
-          `${me} ${g(me, "חסם", "חסמה")} עם ה${car}`)));
-    addBtn(`✅ יצאתי עם ה${parkedCar || "רכב"} — החניון פנוי`, "free", () =>
-      act(CLEAR, `${me} ${g(me, "יצא", "יצאה")} מהחניון עם ה${parkedCar || "רכב"}`));
+      addBtn(`⛔ ${the(car)} חוסם`, "blocked", () => block(car)));
+    other(`⛔ ${OTHER} חוסם`, "blocked ghost-color", block);
+    addBtn(`✅ ${the(parkedCar)} יצא — החניון פנוי`, "free", () =>
+      act(CLEAR, `${me} ${g(me, "סימן", "סימנה")}: ${the(parkedCar)} יצא, החניון פנוי`));
   } else {
-    addBtn(`↩️ הזזתי את ה${blockedCar || "רכב"} — אין חסימה`, "free", () =>
-      act(CLEAR_BLOCK, `${me} ${g(me, "הזיז", "הזיזה")} את ה${blockedCar || "רכב"}`));
+    addBtn(`↩️ ${the(blockedCar)} זז — אין חסימה`, "free", () =>
+      act(CLEAR_BLOCK, `${me} ${g(me, "סימן", "סימנה")}: ${the(blockedCar)} זז, אין חסימה`));
   }
 
   // תיקון ידני אם המצב לא נכון

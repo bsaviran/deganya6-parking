@@ -7,10 +7,13 @@ export const PEOPLE = [
   { name: "אמא", female: true },
 ];
 
-// הרכבים (אפשר לשנות/להוסיף). color — הצבע של הרכב באיור
+// הרכבים (אפשר לשנות/להוסיף)
+//   model — צורת הציור: "suv" או "sedan"
+//   color — צבע הרכב בציור
+//   photo — (לא חובה) תמונה אמיתית של הרכב, למשל "cars/xpeng.jpg". אם יש — מוצגת במקום הציור
 export const CARS = [
-  { name: "אקספנג", color: "#38bdf8" },
-  { name: "לקסוס", color: "#e5e7eb" },
+  { name: "אקספנג", model: "suv", color: "#17191e", photo: "" },   // Xpeng G6 שחורה
+  { name: "לקסוס", model: "sedan", color: "#17191e", photo: "" },  // Lexus 300h שחורה
 ];
 
 // הגדרות Firebase — מעתיקים מ-Firebase Console:

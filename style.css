@@ -171,7 +171,7 @@ h1, h2, h3 { margin: 0; }
   position: absolute; top: 8px; left: 10px;
   font-size: 0.68rem; color: rgba(255,255,255,.45); letter-spacing: .05em;
 }
-.slot .car { width: 46px; flex: none; filter: drop-shadow(0 6px 8px rgba(0,0,0,.45)); animation: drive-in .5s ease-out; }
+.slot .car { width: 54px; flex: none; filter: drop-shadow(0 6px 8px rgba(0,0,0,.45)); animation: drive-in .5s ease-out; }
 @keyframes drive-in { from { transform: translateY(26px); opacity: 0; } to { transform: none; opacity: 1; } }
 .slot .info b { display: block; font-size: 1.1rem; font-weight: 700; }
 .slot .info span { font-size: 0.85rem; color: rgba(255,255,255,.62); }
@@ -285,3 +285,8 @@ input:focus { border-color: var(--parked); box-shadow: 0 0 0 4px color-mix(in sr
   padding: 10px 14px; border-radius: 14px;
 }
 [hidden] { display: none !important; }
+
+/* ---------- Car art ---------- */
+.btn .ico svg.mini { width: 16px; height: auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
+.btn .ico img.mini { width: 36px; height: 36px; object-fit: cover; border-radius: 9px; }
+.slot .car-photo { width: 104px; height: 72px; object-fit: cover; border-radius: 12px; filter: none; border: 1px solid rgba(255,255,255,.15); }

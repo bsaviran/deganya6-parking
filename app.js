@@ -8,7 +8,6 @@ const OTHER_COLOR = "#a3a3a3";
 const g = (name, m, f) => (PEOPLE.find((p) => p.name === name)?.female ? f : m);
 // "האקספנג" אבל "רכב של השכן" (בלי ה' כפולה לשם חופשי)
 const the = (car) => (CAR_NAMES.includes(car) ? `ה${car}` : car || "הרכב");
-const carColor = (car) => CARS.find((c) => c.name === car)?.color || OTHER_COLOR;
 
 const $ = (id) => document.getElementById(id);
 const initials = (name) => name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
@@ -99,27 +98,61 @@ function ago(ts) {
   return `${d.toLocaleDateString("he-IL", { day: "numeric", month: "numeric" })} ${t}`;
 }
 
-// רכב במבט מלמעלה (חזית למעלה)
-function carSvg(color) {
-  return `<svg class="car" viewBox="0 0 60 112" aria-hidden="true">
-    <rect x="1" y="34" width="6" height="10" rx="2" fill="${color}"/>
-    <rect x="53" y="34" width="6" height="10" rx="2" fill="${color}"/>
-    <rect x="5" y="3" width="50" height="106" rx="17" fill="${color}"/>
-    <rect x="5" y="3" width="50" height="106" rx="17" fill="url(#shade)"/>
-    <path d="M11 37 Q30 28 49 37 L46 52 L14 52 Z" fill="#0f172a" opacity=".78"/>
-    <rect x="15" y="55" width="30" height="26" rx="6" fill="#000" opacity=".12"/>
-    <path d="M14 84 L46 84 L48 96 Q30 101 12 96 Z" fill="#0f172a" opacity=".7"/>
-    <ellipse cx="15" cy="8" rx="6" ry="2.4" fill="#fff" opacity=".95"/>
-    <ellipse cx="45" cy="8" rx="6" ry="2.4" fill="#fff" opacity=".95"/>
-    <rect x="11" y="105" width="10" height="2.5" rx="1" fill="#ef4444"/>
-    <rect x="39" y="105" width="10" height="2.5" rx="1" fill="#ef4444"/>
-    <defs><linearGradient id="shade" x1="0" x2="1">
-      <stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".22"/>
-    </linearGradient></defs>
+// ---------- ציורי רכבים (מבט מלמעלה, חזית למעלה) ----------
+const carInfo = (car) => CARS.find((c) => c.name === car) || { model: "sedan", color: OTHER_COLOR };
+let svgId = 0;
+
+// חלקים לפי דגם: suv = אקספנג G6 (קופה-SUV, פס אור רציף, גג זכוכית), sedan = לקסוס (גריל ספינדל, פנסי חץ)
+const MODELS = {
+  suv: {
+    body: { x: 4, y: 4, w: 52, h: 104, rx: 20 },
+    mirrors: 33,
+    parts: (glass) => `
+      <rect x="9" y="8" width="42" height="2.2" rx="1.1" fill="#e0f2fe"/>
+      <rect x="9" y="8" width="42" height="2.2" rx="1.1" fill="#7dd3fc" opacity=".6" filter="blur(1.5px)"/>
+      <path d="M9 34 Q30 25 51 34 L48 48 L12 48 Z" fill="${glass}"/>
+      <rect x="12" y="50" width="36" height="35" rx="8" fill="${glass}"/>
+      <path d="M12 87 L48 87 L49 95 Q30 99 11 95 Z" fill="${glass}"/>
+      <rect x="9" y="103" width="42" height="2.4" rx="1.2" fill="#ef4444"/>`,
+  },
+  sedan: {
+    body: { x: 7, y: 2, w: 46, h: 108, rx: 16 },
+    mirrors: 37,
+    parts: (glass) => `
+      <path d="M23 3.5 L37 3.5 L34 11 L26 11 Z" fill="#05070b" stroke="rgba(255,255,255,.55)" stroke-width=".8"/>
+      <path d="M10 10 L20 6 L20 8.4 L12.5 12 Z" fill="#f8fafc"/>
+      <path d="M50 10 L40 6 L40 8.4 L47.5 12 Z" fill="#f8fafc"/>
+      <path d="M12 38 Q30 30 48 38 L45 52 L15 52 Z" fill="${glass}"/>
+      <rect x="20" y="57" width="20" height="15" rx="3" fill="${glass}"/>
+      <path d="M15 80 L45 80 L47 90 Q30 94 13 90 Z" fill="${glass}"/>
+      <rect x="10" y="105.5" width="40" height="2" rx="1" fill="#ef4444"/>`,
+  },
+};
+
+function carSvg(car, cls = "car") {
+  const { model, color, photo } = carInfo(car);
+  if (photo) return `<img class="${cls} car-photo" src="${esc(photo)}" alt="${esc(car)}" />`;
+  const m = MODELS[model] || MODELS.sedan;
+  const id = `g${++svgId}`;
+  const b = m.body;
+  const glass = `url(#${id}glass)`;
+  return `<svg class="${cls}" viewBox="0 0 60 112" aria-hidden="true">
+    <defs>
+      <linearGradient id="${id}shade" x1="0" x2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".05"/><stop offset=".5" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity=".05"/>
+      </linearGradient>
+      <linearGradient id="${id}glass" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#4b5a70"/><stop offset=".45" stop-color="#1e2633"/><stop offset=".55" stop-color="#2c3646"/><stop offset="1" stop-color="#11161f"/>
+      </linearGradient>
+    </defs>
+    <rect x="${b.x - 3}" y="${m.mirrors}" width="5" height="9" rx="2" fill="${color}" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>
+    <rect x="${b.x + b.w - 2}" y="${m.mirrors}" width="5" height="9" rx="2" fill="${color}" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>
+    <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="${b.rx}" fill="${color}" stroke="rgba(255,255,255,.32)" stroke-width="1.2"/>
+    <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="${b.rx}" fill="url(#${id}shade)"/>
+    ${m.parts(glass)}
   </svg>`;
 }
-const miniCar = (color) =>
-  `<svg viewBox="0 0 60 112"><rect x="5" y="3" width="50" height="106" rx="17" fill="${color}" stroke="rgba(0,0,0,.25)" stroke-width="3"/><path d="M11 37 Q30 28 49 37 L46 52 L14 52 Z" fill="#0f172a" opacity=".7"/></svg>`;
+const miniCar = (car) => carSvg(car, "mini");
 
 // ---------- דיאלוג ----------
 function ask({ title, text = "", input = false, placeholder = "", ok = "אישור" }) {
@@ -169,7 +202,7 @@ function renderSetup() {
 
 // ---------- מסך ראשי ----------
 function slotHtml(tag, car, by, at, verb) {
-  return `<span class="tag">${tag}</span>${carSvg(carColor(car))}
+  return `<span class="tag">${tag}</span>${carSvg(car)}
     <div class="info"><b>${esc(car || by)}</b><span>${esc(by)} ${verb} · ${ago(at)}</span></div>`;
 }
 
@@ -258,8 +291,8 @@ function renderActions(status) {
   if (status === "free") {
     $("actionsTitle").textContent = "מי נכנס לחניון?";
     const park = (car) => act({ ...CLEAR, parkedBy: me, parkedCar: car, parkedAt: now() }, `${signed} ${the(car)} בחניון`);
-    CARS.forEach((c) => addBtn({ title: c.name, sub: "נכנס לחניון", icon: miniCar(c.color), kind: "parked" }, () => park(c.name)));
-    addBtn({ title: OTHER, sub: "אורח / שכן", icon: miniCar(OTHER_COLOR), kind: "parked", wide: true }, async () => {
+    CARS.forEach((c) => addBtn({ title: c.name, sub: "נכנס לחניון", icon: miniCar(c.name), kind: "parked" }, () => park(c.name)));
+    addBtn({ title: OTHER, sub: "אורח / שכן", icon: miniCar(OTHER), kind: "parked", wide: true }, async () => {
       const car = await askOtherCar();
       return car ? park(car) : false;
     });
@@ -269,8 +302,8 @@ function renderActions(status) {
       act(CLEAR, `${signed} ${the(parkedCar)} יצא, החניון פנוי`));
     const block = (car) => act({ blockedBy: me, blockedCar: car, blockedAt: now() }, `${signed} ${the(car)} חוסם את ${the(parkedCar)}`);
     CARS.filter((c) => c.name !== parkedCar).forEach((c) =>
-      addBtn({ title: `${c.name} חוסם`, sub: "חנה מאחור", icon: miniCar(c.color), kind: "blocked" }, () => block(c.name)));
-    addBtn({ title: `${OTHER} חוסם`, sub: "אורח / שכן", icon: miniCar(OTHER_COLOR), kind: "blocked" }, async () => {
+      addBtn({ title: `${c.name} חוסם`, sub: "חנה מאחור", icon: miniCar(c.name), kind: "blocked" }, () => block(c.name)));
+    addBtn({ title: `${OTHER} חוסם`, sub: "אורח / שכן", icon: miniCar(OTHER), kind: "blocked" }, async () => {
       const car = await askOtherCar();
       return car ? block(car) : false;
     });

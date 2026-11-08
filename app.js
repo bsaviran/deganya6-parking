@@ -124,8 +124,8 @@ function render({ state: s, history }) {
   } else if (s_.blockedBy) {
     card.classList.add("blocked");
     emoji = "⛔";
-    text = `${parkedLabel} בחניון\n${blockedLabel} מאחור`;
-    sub = `${parkedLine}\n⛔ ${blockedLabel} — ${s_.blockedBy} ${g(s_.blockedBy, "חוסם", "חוסמת")} מ-${fmtTime(s_.blockedAt)}`;
+    text = `${parkedLabel} בחניון\n${blockedLabel} חוסם`;
+    sub = `${parkedLine}\n⛔ ${blockedLabel} — ${s_.blockedBy} ${g(s_.blockedBy, "חסם", "חסמה")} ${fmtTime(s_.blockedAt)}`;
   } else {
     card.classList.add("parked");
     emoji = "🚗"; text = `${parkedLabel} בחניון`;

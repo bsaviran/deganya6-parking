@@ -11,9 +11,11 @@ export const PEOPLE = [
 // Project settings → General → Your apps → Web app → SDK setup and configuration
 // (המפתחות האלה לא סודיים; ההגנה היא דרך "קוד משפחה" וחוקי ה-Database, ראה README)
 export const firebaseConfig = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  databaseURL: "https://REPLACE_ME-default-rtdb.firebaseio.com",
-  projectId: "REPLACE_ME",
-  appId: "REPLACE_ME",
+  apiKey: "AIzaSyB9je9bXZk2oDD9EiMDTs0H7mUz2oVLPYc",
+  authDomain: "deganya6-pariking.firebaseapp.com",
+  databaseURL: "https://deganya6-pariking-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "deganya6-pariking",
+  storageBucket: "deganya6-pariking.firebasestorage.app",
+  messagingSenderId: "149055501151",
+  appId: "1:149055501151:web:e85760c9e35fd8c0d87cea",
 };

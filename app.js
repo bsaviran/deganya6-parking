@@ -232,16 +232,16 @@ function render(data) {
     if (same) el.querySelector(".car")?.style.setProperty("animation", "none");
   };
   if (parkedBy) {
-    fill($("slotIn"), `${parkedCar}|${parkedAt}`, "slot filled",
+    fill($("slotIn"), `${parkedCar}|${parkedAt}`, "slot in filled",
       slotHtml("בפנים", parkedCar, parkedBy, parkedAt, g(parkedBy, "חנה", "חנתה")));
   } else {
-    fill($("slotIn"), "", "slot empty", `<span class="tag">בפנים</span>מקום פנוי`);
+    fill($("slotIn"), "", "slot in empty", `<span class="tag">בפנים</span>מקום פנוי`);
   }
   if (blockedBy) {
     fill($("slotOut"), `${blockedCar}|${blockedAt}`, "slot filled blocking",
       slotHtml("חוסם", blockedCar, blockedBy, blockedAt, g(blockedBy, "חסם", "חסמה")));
   } else {
-    fill($("slotOut"), "", "slot empty", `<span class="tag">מאחור</span>${parkedBy ? "אין חסימה" : "—"}`);
+    fill($("slotOut"), "", "slot empty", `<span class="tag">חוסם</span>${parkedBy ? "אין חסימה" : "—"}`);
   }
 
   renderActions(status);

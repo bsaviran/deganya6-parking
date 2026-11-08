@@ -143,17 +143,13 @@ h1, h2, h3 { margin: 0; }
   background: repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 8px, transparent 8px 16px);
 }
 .lot-street {
-  position: relative; height: 34px;
+  position: relative; height: 24px;
   background: rgba(0,0,0,.25);
   display: grid; place-items: center;
 }
 .lot-street::before {
   content: ""; position: absolute; left: 12px; right: 12px; top: 50%; height: 2px;
   background: repeating-linear-gradient(90deg, var(--paint) 0 14px, transparent 14px 26px);
-}
-.lot-street span {
-  position: relative; font-size: 0.7rem; letter-spacing: .2em;
-  color: rgba(255,255,255,.5); background: #1a2030; padding: 0 8px; border-radius: 6px;
 }
 .slot {
   position: relative;
@@ -290,3 +286,13 @@ input:focus { border-color: var(--parked); box-shadow: 0 0 0 4px color-mix(in sr
 .btn .ico svg.mini { width: 16px; height: auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
 .btn .ico img.mini { width: 36px; height: 36px; object-fit: cover; border-radius: 9px; }
 .slot .car-photo { width: 104px; height: 72px; object-fit: cover; border-radius: 12px; filter: none; border: 1px solid rgba(255,255,255,.15); }
+
+/* המקום בפנים — לאורך (כמו חניה אמיתית); החוסם נשאר לרוחב */
+.slot.in {
+  flex-direction: column; justify-content: center; gap: 10px;
+  width: 58%; min-height: 240px; margin: 12px auto;
+  text-align: center;
+}
+.slot.in .car { width: 64px; }
+.slot.in .car-photo { width: 100%; height: 120px; }
+.slot.in .info span { display: block; margin-top: 2px; }

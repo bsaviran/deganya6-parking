@@ -302,3 +302,4 @@ input.bad { border-color: var(--blocked); box-shadow: 0 0 0 4px color-mix(in srg
 @keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
 .loading { text-align: center; color: var(--muted); margin-top: 30vh; animation: blink 1.2s ease-in-out infinite; }
 @keyframes blink { 50% { opacity: .4; } }
+.link-btn.danger { color: var(--blocked); margin: 4px auto 14px; }

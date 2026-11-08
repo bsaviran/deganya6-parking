@@ -1,6 +1,7 @@
 import { PEOPLE, CARS, firebaseConfig } from "./config.js";
 
 const NAMES = PEOPLE.map((p) => p.name);
+const isAdmin = (name) => !!PEOPLE.find((p) => p.name === name)?.admin;
 const CAR_NAMES = CARS.map((c) => c.name);
 const OTHER = "רכב אחר";
 const OTHER_COLOR = "#a3a3a3";
@@ -69,6 +70,12 @@ async function createStore(code) {
         LS.set(key, JSON.stringify(d));
         emit();
       },
+      async clearHistory() {
+        const d = read();
+        d.history = [];
+        LS.set(key, JSON.stringify(d));
+        emit();
+      },
     };
   }
 
@@ -94,6 +101,9 @@ async function createStore(code) {
     async write(next, entry) {
       await db.set(stateRef, next);
       await db.push(db.ref(database, `${base}/history`), entry);
+    },
+    async clearHistory() {
+      await db.remove(db.ref(database, `${base}/history`));
     },
   };
 }
@@ -276,6 +286,7 @@ function render(data) {
   ol.innerHTML = history?.length
     ? history.map((h) => `<li>${esc(h.text)}<time>${ago(h.at)}</time></li>`).join("")
     : `<li>אין עדיין פעולות</li>`;
+  $("clearHistBtn").hidden = !isAdmin(me) || !history?.length;
 }
 
 function addBtn({ title, sub = "", icon, kind, solid = false, wide = false }, fn) {
@@ -377,6 +388,11 @@ async function start(fromSetup = false) {
     }
   };
   if (!store) return showError("לא הצלחתי להתחבר — נסו לרענן");
+  $("clearHistBtn").onclick = async () => {
+    if (!isAdmin(me)) return;
+    const ok = await ask({ title: "למחוק את כל ההיסטוריה?", text: "אי אפשר לשחזר. מצב החניה הנוכחי לא ישתנה.", ok: "מחיקה" });
+    if (ok) store.clearHistory().catch((e) => showError("שגיאה במחיקה: " + e.message));
+  };
   store.subscribe(render);
 }
 

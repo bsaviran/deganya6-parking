@@ -28,6 +28,29 @@ let state = { ...EMPTY };
 let lastData = null;
 let store = null;
 
+let fbPromise = null;
+function getFirebase() {
+  fbPromise ||= (async () => {
+    const v = "10.12.2";
+    const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${v}/firebase-app.js`);
+    const db = await import(`https://www.gstatic.com/firebasejs/${v}/firebase-database.js`);
+    return { db, database: db.getDatabase(initializeApp(firebaseConfig)) };
+  })();
+  return fbPromise;
+}
+const isDenied = (e) => /permission/i.test(`${e?.code} ${e?.message}`);
+const WRONG_CODE = "קוד שגוי — לא ניתן להיכנס";
+
+// קוד שגוי: מוחקים אותו וחוזרים למסך הכניסה
+function kickOut() {
+  code = null;
+  LS.del("code");
+  renderSetup();
+  showError(WRONG_CODE);
+  $("codeInput").classList.add("bad");
+  $("codeInput").focus();
+}
+
 // ---------- Store: Firebase (אמיתי) או localStorage (מצב הדגמה) ----------
 async function createStore(code) {
   if (DEMO) {
@@ -37,6 +60,7 @@ async function createStore(code) {
     const emit = () => listeners.forEach((fn) => fn(read()));
     window.addEventListener("storage", (e) => e.key === key && emit());
     return {
+      async check() {},
       subscribe(fn) { listeners.push(fn); fn(read()); },
       async write(next, entry) {
         const d = read();
@@ -48,19 +72,17 @@ async function createStore(code) {
     };
   }
 
-  const v = "10.12.2";
-  const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${v}/firebase-app.js`);
-  const db = await import(`https://www.gstatic.com/firebasejs/${v}/firebase-database.js`);
-  const app = initializeApp(firebaseConfig);
-  const database = db.getDatabase(app);
+  const { db, database } = await getFirebase();
   const base = `homes/${code}`;
   const stateRef = db.ref(database, `${base}/state`);
   const histQuery = db.query(db.ref(database, `${base}/history`), db.orderByChild("at"), db.limitToLast(30));
 
   return {
+    // בודק שהקוד נכון (Firebase דוחה קוד שגוי עם Permission denied)
+    async check() { await db.get(stateRef); },
     subscribe(fn) {
       let cur = { state: EMPTY, history: [] };
-      const onErr = (err) => showError(err.code === "PERMISSION_DENIED" ? "קוד משפחה שגוי" : err.message);
+      const onErr = (err) => (isDenied(err) ? kickOut() : showError(err.message));
       db.onValue(stateRef, (s) => { cur = { ...cur, state: s.val() || EMPTY }; fn(cur); }, onErr);
       db.onValue(histQuery, (s) => {
         const list = [];
@@ -180,6 +202,8 @@ function renderSetup() {
   $("main").hidden = true;
   $("whoBtn").hidden = true;
   $("codeInput").value = code || "";
+  $("codeInput").classList.remove("bad");
+  $("codeInput").oninput = () => { $("codeInput").classList.remove("bad"); showError(""); };
   $("codeField").hidden = DEMO;
   const pick = $("peoplePick");
   pick.innerHTML = "";
@@ -187,14 +211,16 @@ function renderSetup() {
     const b = document.createElement("button");
     b.className = "btn";
     b.innerHTML = `<span class="ico">${esc(initials(name))}</span><span class="txt"><b>${esc(name)}</b></span>`;
-    b.onclick = () => {
+    b.onclick = async () => {
       const c = DEMO ? "demo" : $("codeInput").value.trim();
       if (!c) return showError("צריך להכניס קוד משפחה");
-      if (!/^[\w-]+$/.test(c)) return showError("הקוד יכול להכיל רק אותיות באנגלית, מספרים, - ו-_");
+      if (!/^[\w-]+$/.test(c)) return kickOut();
       me = name; code = c;
-      LS.set("me", me); LS.set("code", code);
       showError("");
-      start();
+      pick.querySelectorAll("button").forEach((x) => (x.disabled = true));
+      b.querySelector("small")?.remove();
+      b.querySelector(".txt").insertAdjacentHTML("beforeend", "<small>בודק קוד…</small>");
+      await start(true);
     };
     pick.appendChild(b);
   });
@@ -322,8 +348,24 @@ function renderActions(status) {
 }
 
 // ---------- התחלה ----------
-async function start() {
+async function start(fromSetup = false) {
   if (!me || !code || !NAMES.includes(me)) return renderSetup();
+  $("loading").hidden = fromSetup;
+  try {
+    store = await createStore(code);
+    await store.check();
+  } catch (e) {
+    $("loading").hidden = true;
+    if (isDenied(e)) return kickOut();
+    // בעיית רשת: מכניסה ראשונה — לא נכנסים; קוד ששמור כבר — נכנסים ומנסים להתחבר
+    if (fromSetup) {
+      renderSetup();
+      return showError("אין חיבור לאינטרנט — נסו שוב");
+    }
+  }
+  $("loading").hidden = true;
+  LS.set("me", me);
+  LS.set("code", code);
   $("setup").hidden = true;
   $("main").hidden = false;
   const who = $("whoBtn");
@@ -334,12 +376,8 @@ async function start() {
       LS.del("me"); me = null; location.reload();
     }
   };
-  try {
-    store = await createStore(code);
-    store.subscribe(render);
-  } catch (e) {
-    showError("לא הצלחתי להתחבר: " + e.message);
-  }
+  if (!store) return showError("לא הצלחתי להתחבר — נסו לרענן");
+  store.subscribe(render);
 }
 
 // רענון "לפני X דק'" כל חצי דקה

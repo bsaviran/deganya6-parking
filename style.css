@@ -296,3 +296,9 @@ input:focus { border-color: var(--parked); box-shadow: 0 0 0 4px color-mix(in sr
 .slot.in .car { width: 64px; }
 .slot.in .car-photo { width: 100%; height: 120px; }
 .slot.in .info span { display: block; margin-top: 2px; }
+
+/* קוד שגוי */
+input.bad { border-color: var(--blocked); box-shadow: 0 0 0 4px color-mix(in srgb, var(--blocked) 18%, transparent); animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+.loading { text-align: center; color: var(--muted); margin-top: 30vh; animation: blink 1.2s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .4; } }

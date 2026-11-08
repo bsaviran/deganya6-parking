@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="חניה" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>חניה דגניה 6</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>🅿️ חניה דגניה 6</h1>
+      <button id="whoBtn" class="chip" hidden></button>
+    </header>
+
+    <!-- מסך כניסה: קוד משפחה + מי אני -->
+    <section id="setup" class="card" hidden>
+      <h2>כניסה ראשונה</h2>
+      <label>קוד משפחה
+        <input id="codeInput" type="password" autocomplete="off" placeholder="הקוד שהגדרתם ב-Firebase" />
+      </label>
+      <p class="label">מי אתה?</p>
+      <div id="peoplePick" class="row"></div>
+    </section>
+
+    <!-- מצב החניה -->
+    <section id="main" hidden>
+      <div id="statusCard" class="card status">
+        <div id="statusEmoji" class="emoji">…</div>
+        <div id="statusText" class="big">טוען…</div>
+        <div id="statusSub" class="sub"></div>
+      </div>
+
+      <div id="actions" class="actions"></div>
+
+      <label class="note">הערה (לא חובה)
+        <input id="noteInput" maxlength="80" placeholder="למשל: יוצא ב-8:00" />
+      </label>
+
+      <details class="card history">
+        <summary>היסטוריה</summary>
+        <ul id="historyList"></ul>
+      </details>
+    </section>
+
+    <p id="error" class="error" hidden></p>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

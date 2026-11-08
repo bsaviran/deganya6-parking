@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "homes": {
+      "$code": {
+        ".read": "$code === 'CHANGE_TO_YOUR_FAMILY_CODE'",
+        ".write": "$code === 'CHANGE_TO_YOUR_FAMILY_CODE'"
+      }
+    }
+  }
+}

@@ -3,54 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0b1020" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="חניה" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <title>חניה דגניה 6</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-status="loading">
+  <div class="glow" aria-hidden="true"></div>
+
   <main class="wrap">
-    <header>
-      <h1>🅿️ חניה דגניה 6</h1>
-      <button id="whoBtn" class="chip" hidden></button>
+    <header class="top">
+      <div class="brand">
+        <div class="logo">P</div>
+        <div>
+          <div class="brand-title">דגניה 6</div>
+          <div class="brand-sub">החניה של המשפחה</div>
+        </div>
+      </div>
+      <button id="whoBtn" class="who" hidden></button>
     </header>
 
-    <!-- מסך כניסה: קוד משפחה + מי אני -->
-    <section id="setup" class="card" hidden>
-      <h2>כניסה ראשונה</h2>
-      <label>קוד משפחה
-        <input id="codeInput" type="password" autocomplete="off" placeholder="הקוד שהגדרתם ב-Firebase" />
+    <!-- כניסה ראשונה -->
+    <section id="setup" class="panel setup" hidden>
+      <h2>ברוכים הבאים 👋</h2>
+      <p class="muted">פעם אחת בכל טלפון, ואז האפליקציה זוכרת.</p>
+      <label class="field" id="codeField">
+        <span>קוד משפחה</span>
+        <input id="codeInput" type="password" inputmode="numeric" autocomplete="off" placeholder="••" />
       </label>
-      <p class="label">מי את/ה?</p>
-      <div id="peoplePick" class="row"></div>
+      <p class="field-label">מי את/ה?</p>
+      <div id="peoplePick" class="people"></div>
     </section>
 
-    <!-- מצב החניה -->
+    <!-- מסך ראשי -->
     <section id="main" hidden>
-      <div id="statusCard" class="card status">
-        <div id="statusEmoji" class="emoji">…</div>
-        <div id="statusText" class="big">טוען…</div>
-        <div id="statusSub" class="sub"></div>
+      <div class="panel hero">
+        <div class="hero-head">
+          <span id="pill" class="pill"><i></i><b id="pillText">טוען</b></span>
+          <span id="updated" class="muted small"></span>
+        </div>
+        <h1 id="headline">טוען…</h1>
+        <p id="noteView" class="note-view" hidden></p>
+
+        <!-- איור החניה -->
+        <div class="lot" aria-label="מצב החניה">
+          <div class="lot-wall">קיר</div>
+          <div id="slotIn" class="slot"></div>
+          <div id="slotOut" class="slot"></div>
+          <div class="lot-street"><span>רחוב</span></div>
+        </div>
       </div>
 
+      <h3 id="actionsTitle" class="section-title"></h3>
       <div id="actions" class="actions"></div>
 
-      <label class="note">הערה (לא חובה)
+      <label class="field note">
+        <span>הערה (לא חובה)</span>
         <input id="noteInput" maxlength="80" placeholder="למשל: יוצא ב-8:00" />
       </label>
 
-      <details class="card history">
-        <summary>היסטוריה</summary>
-        <ul id="historyList"></ul>
+      <button id="resetBtn" class="link-btn" hidden>איפוס — לסמן שהחניון פנוי</button>
+
+      <details class="panel history">
+        <summary><span>היסטוריה</span><span class="chev">›</span></summary>
+        <ol id="historyList" class="timeline"></ol>
       </details>
     </section>
 
     <p id="error" class="error" hidden></p>
   </main>
+
+  <!-- חלון שאלה -->
+  <dialog id="dlg" class="dlg">
+    <form method="dialog">
+      <h3 id="dlgTitle"></h3>
+      <p id="dlgText" class="muted"></p>
+      <input id="dlgInput" maxlength="30" />
+      <div class="dlg-btns">
+        <button value="cancel" class="btn ghost" formnovalidate>ביטול</button>
+        <button value="ok" id="dlgOk" class="btn solid">אישור</button>
+      </div>
+    </form>
+  </dialog>
 
   <script type="module" src="app.js"></script>
 </body>

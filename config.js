@@ -7,8 +7,11 @@ export const PEOPLE = [
   { name: "אמא", female: true },
 ];
 
-// הרכבים (אפשר לשנות/להוסיף)
-export const CARS = ["אקספנג", "לקסוס"];
+// הרכבים (אפשר לשנות/להוסיף). color — הצבע של הרכב באיור
+export const CARS = [
+  { name: "אקספנג", color: "#38bdf8" },
+  { name: "לקסוס", color: "#e5e7eb" },
+];
 
 // הגדרות Firebase — מעתיקים מ-Firebase Console:
 // Project settings → General → Your apps → Web app → SDK setup and configuration

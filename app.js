@@ -304,7 +304,7 @@ function act(patch, text) {
 }
 
 async function askOtherCar() {
-  const name = await ask({ title: "איזה רכב?", text: "לא חובה — אפשר להשאיר ריק", input: true, placeholder: "למשל: הרכב של השכן" });
+  const name = await ask({ title: "איזה רכב?", text: "לא חובה — אפשר להשאיר ריק", input: true, placeholder: "למשל: הרכב של דני" });
   return name === null ? null : name.slice(0, 30) || OTHER;
 }
 
@@ -318,7 +318,7 @@ function renderActions(status) {
     $("actionsTitle").textContent = "מי נכנס לחניון?";
     const park = (car) => act({ ...CLEAR, parkedBy: me, parkedCar: car, parkedAt: now() }, `${signed} ${the(car)} בחניון`);
     CARS.forEach((c) => addBtn({ title: c.name, sub: "נכנס לחניון", icon: miniCar(c.name), kind: "parked" }, () => park(c.name)));
-    addBtn({ title: OTHER, sub: "אורח / שכן", icon: miniCar(OTHER), kind: "parked", wide: true }, async () => {
+    addBtn({ title: OTHER, sub: "אורח", icon: miniCar(OTHER), kind: "parked", wide: true }, async () => {
       const car = await askOtherCar();
       return car ? park(car) : false;
     });
@@ -329,7 +329,7 @@ function renderActions(status) {
     const block = (car) => act({ blockedBy: me, blockedCar: car, blockedAt: now() }, `${signed} ${the(car)} חוסם את ${the(parkedCar)}`);
     CARS.filter((c) => c.name !== parkedCar).forEach((c) =>
       addBtn({ title: `${c.name} חוסם`, sub: "חנה מאחור", icon: miniCar(c.name), kind: "blocked" }, () => block(c.name)));
-    addBtn({ title: `${OTHER} חוסם`, sub: "אורח / שכן", icon: miniCar(OTHER), kind: "blocked" }, async () => {
+    addBtn({ title: `${OTHER} חוסם`, sub: "אורח", icon: miniCar(OTHER), kind: "blocked" }, async () => {
       const car = await askOtherCar();
       return car ? block(car) : false;
     });

@@ -1,7 +1,11 @@
 // הגדרות האפליקציה — ערוך את הקובץ הזה.
 
-// השמות שיופיעו באפליקציה (אפשר לשנות/להוסיף)
-export const PEOPLE = ["אבירן", "האח"];
+// מי משתמש באפליקציה (אפשר לשנות/להוסיף). female: true — לניסוח בלשון נקבה
+export const PEOPLE = [
+  { name: "אבירן" },
+  { name: "יורם מיכאל" },
+  { name: "אמא", female: true },
+];
 
 // הגדרות Firebase — מעתיקים מ-Firebase Console:
 // Project settings → General → Your apps → Web app → SDK setup and configuration

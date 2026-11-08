@@ -1,5 +1,9 @@
 import { PEOPLE, firebaseConfig } from "./config.js";
 
+const NAMES = PEOPLE.map((p) => p.name);
+// ניסוח לפי מגדר: g(name, "חנה", "חנתה")
+const g = (name, m, f) => (PEOPLE.find((p) => p.name === name)?.female ? f : m);
+
 const $ = (id) => document.getElementById(id);
 const LS = {
   get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
@@ -86,7 +90,7 @@ function renderSetup() {
   if (DEMO) $("codeInput").closest("label").hidden = true;
   const pick = $("peoplePick");
   pick.innerHTML = "";
-  PEOPLE.forEach((name) => {
+  NAMES.forEach((name) => {
     const b = document.createElement("button");
     b.textContent = name;
     b.onclick = () => {
@@ -114,8 +118,8 @@ function render({ state: s, history }) {
   } else if (state.blockedBy) {
     card.classList.add("blocked");
     emoji = "⛔";
-    text = `${state.parkedBy} בחניון · ${state.blockedBy} חוסם`;
-    sub = `חנה ${fmtTime(state.parkedAt)}\nחוסם מ-${fmtTime(state.blockedAt)}`;
+    text = `${state.parkedBy} בחניון · ${state.blockedBy} ${g(state.blockedBy, "חוסם", "חוסמת")}`;
+    sub = `${g(state.parkedBy, "חנה", "חנתה")} ${fmtTime(state.parkedAt)}\n${g(state.blockedBy, "חוסם", "חוסמת")} מ-${fmtTime(state.blockedAt)}`;
   } else {
     card.classList.add("parked");
     emoji = "🚗"; text = `${state.parkedBy} בחניון`;
@@ -168,19 +172,19 @@ function renderActions() {
 
   if (!parkedBy) {
     addBtn("🚗 חניתי בחניון", "parked", () =>
-      act({ parkedBy: me, parkedAt: now(), blockedBy: null, blockedAt: null }, `${me} חנה בחניון`));
+      act({ parkedBy: me, parkedAt: now(), blockedBy: null, blockedAt: null }, `${me} ${g(me, "חנה", "חנתה")} בחניון`));
   } else {
     if (parkedBy === me) {
       addBtn("✅ יצאתי — החניון פנוי", "free", () =>
-        act({ parkedBy: null, parkedAt: null, blockedBy: null, blockedAt: null }, `${me} יצא מהחניון`));
+        act({ parkedBy: null, parkedAt: null, blockedBy: null, blockedAt: null }, `${me} ${g(me, "יצא", "יצאה")} מהחניון`));
     }
     if (!blockedBy && parkedBy !== me) {
       addBtn(`⛔ חסמתי את ${parkedBy}`, "blocked", () =>
-        act({ blockedBy: me, blockedAt: now() }, `${me} חוסם את ${parkedBy}`));
+        act({ blockedBy: me, blockedAt: now() }, `${me} ${g(me, "חוסם", "חוסמת")} את ${parkedBy}`));
     }
     if (blockedBy === me) {
       addBtn("↩️ הזזתי — שחררתי חסימה", "free", () =>
-        act({ blockedBy: null, blockedAt: null }, `${me} שחרר את החסימה`));
+        act({ blockedBy: null, blockedAt: null }, `${me} ${g(me, "שחרר", "שחררה")} את החסימה`));
     }
   }
 
@@ -188,13 +192,13 @@ function renderActions() {
   if (parkedBy) {
     addBtn("🧹 איפוס — החניון פנוי", "ghost", () => {
       if (!confirm("לאפס את המצב לחניון פנוי?")) return Promise.resolve();
-      return act({ parkedBy: null, parkedAt: null, blockedBy: null, blockedAt: null }, `${me} איפס את המצב`);
+      return act({ parkedBy: null, parkedAt: null, blockedBy: null, blockedAt: null }, `${me} ${g(me, "איפס", "איפסה")} את המצב`);
     });
   }
 }
 
 async function start() {
-  if (!me || !code || !PEOPLE.includes(me)) return renderSetup();
+  if (!me || !code || !NAMES.includes(me)) return renderSetup();
   $("setup").hidden = true;
   $("main").hidden = false;
   const who = $("whoBtn");

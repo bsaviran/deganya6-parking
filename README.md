@@ -28,7 +28,7 @@ python3 -m http.server 8000
    ומחליפים את `CHANGE_TO_YOUR_FAMILY_CODE` בקוד סודי משלכם (אותיות באנגלית/מספרים, למשל `dganya6-k93xq`) → **Publish**.
    > את הקוד הזה **לא** שומרים בגיט — רק ב-Firebase ובראש שלכם.
 4. **Project settings (⚙️) → General → Your apps → `</>` (Web)** → נותנים שם → מעתיקים את ה-`firebaseConfig` לתוך `config.js`.
-5. ב-`config.js` מעדכנים גם את `PEOPLE` לשמות שלכם.
+5. ב-`config.js` אפשר לערוך את `PEOPLE` (שמות, ו-`female: true` לניסוח בלשון נקבה).
 
 ### 2. GitHub
 ```bash
